@@ -8,7 +8,7 @@
 #include<arpa/inet.h>
 #include<sys/socket.h>
 
-#define SERVER "127.0.0.1"
+#define SERVER "127.0.0.1"//this is our local host IP
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to send data
 
