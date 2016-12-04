@@ -50,7 +50,7 @@ int main(void)
         fflush(stdout);
 
         //try to receive some data, this is a blocking call
-        if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, &slen)) == -1)
+        if ((recv_len = recvfrom(s, buf, BUFLEN, 0, (struct sockaddr *) &si_other, (unsigned int *)&slen)) == -1)
         {
             die("recvfrom()");
         }
