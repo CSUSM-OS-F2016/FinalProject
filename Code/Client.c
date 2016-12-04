@@ -63,6 +63,6 @@ int main(void)
         puts(buf);
     }
 
-    close(s);
+    close(s); //closes socket
     return 0;
 }
