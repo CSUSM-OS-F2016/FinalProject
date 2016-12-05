@@ -7,9 +7,24 @@
 #include<stdlib.h> //exit(0);
 #include<arpa/inet.h>
 #include<sys/socket.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
+
+struct sockaddr_in si_me, si_other;
+
+int s, i, slen = sizeof(si_other) , recv_len;
+char buf[BUFLEN];
+
+pthread_t	tid[1]; // init thread(s)
+
+
+void *hearing_function(void *arg); // function for listening thread
 
 void die(char *s)
 {
@@ -19,11 +34,8 @@ void die(char *s)
 
 int main(void)
 {
-    struct sockaddr_in si_me, si_other;
-    
-    int s, i, slen = sizeof(si_other) , recv_len;
-    char buf[BUFLEN];
-    
+   
+    int status;
     //create a UDP socket
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
     {
@@ -43,7 +55,25 @@ int main(void)
         die("bind");
     }
     
-    //keep listening for data
+    status = pthread_create(&(tid[0]), NULL, hearing_function, NULL);
+    
+    if (status != 0)
+    {
+        perror("Thread create error");
+        exit(EXIT_FAILURE);
+    }
+    status = pthread_join(tid[0], NULL);
+    if (status != 0)
+    {
+        perror("Thread join error");
+        exit(EXIT_FAILURE);
+    }
+    
+    close(s);
+    return 0;
+}
+void *hearing_function(void *arg)
+{
     while(1)
     {
         printf("Waiting for data...");
@@ -65,7 +95,7 @@ int main(void)
             die("sendto()");
         }
     }
+
     
-    close(s);
-    return 0;
+    pthread_exit(NULL);
 }
