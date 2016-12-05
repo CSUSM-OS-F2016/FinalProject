@@ -17,10 +17,11 @@
 struct sockaddr_in si_other;
 int s, i, slen=sizeof(si_other);
 char buf[BUFLEN];
+char bufLis[BUFLEN];
 char message[BUFLEN];
 
 
-void *talking_function(void *arg); //  function for consumer thread
+void *talking_function(void *arg); //  function for talking thread
 
 void die(char *s)
 {
