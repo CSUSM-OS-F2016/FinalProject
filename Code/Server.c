@@ -20,11 +20,14 @@ struct sockaddr_in si_me, si_other;
 
 int s, i, slen = sizeof(si_other) , recv_len;
 char buf[BUFLEN];
+char bufLis[BUFLEN];
+char message[BUFLEN];
 
-pthread_t	tid[1]; // init thread(s)
+pthread_t	tid[2]; // init thread(s)
 
 
 void *hearing_function(void *arg); // function for listening thread
+void *talking_function(void *arg); // function for listening thread
 
 void die(char *s)
 {
@@ -62,7 +65,20 @@ int main(void)
         perror("Thread create error");
         exit(EXIT_FAILURE);
     }
+    status = pthread_create(&(tid[1]), NULL, talking_function, NULL);
+    
+    if (status != 0)
+    {
+        perror("Thread create error");
+        exit(EXIT_FAILURE);
+    }
     status = pthread_join(tid[0], NULL);
+    if (status != 0)
+    {
+        perror("Thread join error");
+        exit(EXIT_FAILURE);
+    }
+    status = pthread_join(tid[1], NULL);
     if (status != 0)
     {
         perror("Thread join error");
@@ -76,7 +92,7 @@ void *hearing_function(void *arg)
 {
     while(1)
     {
-        printf("Waiting for data...");
+        
         fflush(stdout);
         
         //try to receive some data, this is a blocking call
@@ -89,13 +105,33 @@ void *hearing_function(void *arg)
         printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
         printf("Data: %s\n" , buf);
         
+        
+        
+    }
+
+    
+    pthread_exit(NULL);
+}
+void *talking_function(void *arg)
+{
+    while(1)
+    {
+        
+        printf("\n Enter message : \n");
+        gets(message);
+        printf("\n");
+        
+        printf(" this is it before it sent %s \n", message);
+        
         //now reply the client with the same data
-        if (sendto(s, buf, recv_len, 0, (struct sockaddr*) &si_other, slen) == -1)
+        if (sendto(s, message, recv_len, 0, (struct sockaddr*) &si_other, slen) == -1)
         {
             die("sendto()");
         }
+        
+         memset(buf,'\0', BUFLEN);
     }
-
+    
     
     pthread_exit(NULL);
 }
