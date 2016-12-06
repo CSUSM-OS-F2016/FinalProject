@@ -140,7 +140,7 @@ void *listen_function(void *arg)
         printf("Received packet from %s:%d\n ", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
         printf("Encrypted Message: %s\n" , bufLis);
         memset(decryptedMessage, '\0', BUFLEN);
-        decrypt(decryptedMessage, buf);//decrypt the message
+        decrypt(decryptedMessage, bufLis);//decrypt the message
         printf("Decrypted Message: %s\n" , decryptedMessage);
         //printf("Data: %s  \n" , bufLis);
         memset(bufLis,'0',BUFLEN);
