@@ -87,11 +87,10 @@ void *talking_function(void *arg)
     {
         
         
-        pthread_mutex_lock(&lock); // has the lock
+        
         printf("\n Enter message : \n");
         gets(message);
         printf("\n");
-        pthread_mutex_unlock(&lock);//released
 
         //send the message
         if (sendto(s, message, strlen(message) , 0 , (struct sockaddr *) &si_other, slen)==-1)
@@ -103,7 +102,7 @@ void *talking_function(void *arg)
         //clear the buffer by filling null, it might have previously received data
         
         //try to receive some data, this is a blocking call
-       
+        memset(message,'\0', sizeof(message));
         
         
     }
@@ -124,11 +123,11 @@ void *listen_function(void *arg)
         }
         
         //print details of the client/peer and the data received
-        printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
-        printf("Data: %s\n" , bufLis);
+        printf("Received packet from %s:%d\n ", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
+        printf("Data: %s  \n" , bufLis);
+        memset(bufLis,'0',BUFLEN);
         
-         printf("Data: %s\n" , bufLis);
-
+        
         
     }
     

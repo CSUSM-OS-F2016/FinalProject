@@ -124,12 +124,12 @@ void *talking_function(void *arg)
         printf(" this is it before it sent %s \n", message);
         
         //now reply the client with the same data
-        if (sendto(s, message, recv_len, 0, (struct sockaddr*) &si_other, slen) == -1)
+        if (sendto(s, message, sizeof(message), 0, (struct sockaddr*) &si_other, slen) == -1)
         {
             die("sendto()");
         }
         
-         memset(buf,'\0', BUFLEN);
+         memset(message,'\0', sizeof(message));
     }
     
     
