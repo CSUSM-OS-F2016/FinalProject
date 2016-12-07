@@ -58,53 +58,74 @@ void setVals(int min, int max);
 //For encryption and decryption checking
 void checkBounds(char value);
 
+/**
+* Error handling method (default). shows the error and stops exceution
+* @param s       String to be displayed as the error
+*/
 void die(char *s)
 {
     perror(s);
     exit(1);
 }
 
+/**
+* Main invocation of program
+*     • Creates the sockets
+*     • Creates the sending and recieving threads
+*/
 int main(void)
 {
     int status;
-    pthread_t	tid[2]; // init my one threads
+    pthread_t	tid[2]; // init my threads
 
+    /**
+    * This 'if' statement creates a new socket using a default constructor
+    *       • Constructor Parameters:
+    *         • AF_INET:      Address Family that is used to designate that our
+    *                         socket can communicate with. There are 8 different
+    *                         familes including: PF_UNIX, PF_SYSTEM, and PF_INET6
+    *         • SOCK_DGRAM:   The specified type of the socket. This parameter specifies
+    *                         the semantics of communication. There are 3 types.
+    *         • IPPROTO_UDP:  Finally, we are referencing the protocol we are using.
+    *                         In this case, we are using IP Protocol: UDP.
+    *       • Constructor returns the descriptor of the socket. If the value is -1,
+    *                         there was an error in its creation and we must kill the
+    *                         program safely.
+    */
     if ( (s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-    {
         die("socket");
-    }
 
+    /** Create memory with the byte value of the socket */
     memset((char *) &si_other, 0, sizeof(si_other));
-    si_other.sin_family = AF_INET;
-    si_other.sin_port = htons(PORT);
+    si_other.sin_family = AF_INET;                      // Set the socket family explicitly.
+    si_other.sin_port = htons(PORT);                    // Convert the values between host and network
+                                                        // byte order, using the specified port above.
 
+    /**
+    * This 'if' statement converts the presentation format address to network format
+    *     • It returns 1 if the address was valid for the specified address family
+    *     • It returns 0 if the address was not parseable, or
+    *     • It returns -1 if some system error occured (which errno is set).
+    * This statement is valid for AF_INET and AF_INET6
+    */
     if (inet_aton(SERVER , &si_other.sin_addr) == 0)
-    {
-        fprintf(stderr, "inet_aton() failed\n");
-        exit(1);
-    }
-    status = pthread_create(&(tid[0]), NULL, talking_function, NULL);
+        die("inet_aton() failed");
 
-    if (status != 0)
-    {
-        perror("Thread create error");
-        exit(EXIT_FAILURE);
-    }
-    status = pthread_create(&(tid[1]), NULL, listen_function, NULL);
+    //  Create a thread and assign it to the talking_function
+    //  If there is an error, kill the program
+    if ((status = pthread_create(&(tid[0]), NULL, talking_function, NULL)) != 0)
+        die("Thread create error");
 
-    if (status != 0)
-    {
-        perror("Thread create error");
-        exit(EXIT_FAILURE);
-    }
+    //  Create the thread and assign it to the listen_function
+    //  If there is an error, kill the program
+    if ((status = pthread_create(&(tid[1]), NULL, listen_function, NULL)) != 0)
+        die("Thread create error");
 
-    status = pthread_join(tid[1], NULL);
-    if (status != 0)
-    {
-        perror("Thread join error");
-        exit(EXIT_FAILURE);
-    }
+    //  Sync the threads
+    if ((pthread_join(tid[1], NULL)) != 0)
+        die("Thread join error");
 
+    //  Close the socket
     close(s);
     return 0;
 }
@@ -240,6 +261,7 @@ void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
   * @param compareVal The variable that we are comparing
   * @param val1       The upper bound (max)
   * @param val2       The lower bound (min)
+  * @return           If the change was made
   */
   int verifyVal(char compareVal, int val1, int val2){
     if(compareVal >= val1 && compareVal <= val2){

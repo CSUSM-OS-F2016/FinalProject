@@ -238,6 +238,7 @@ void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
   * @param compareVal The variable that we are comparing
   * @param val1       The upper bound (max)
   * @param val2       The lower bound (min)
+  * @return           If the change was made
   */
   int verifyVal(char compareVal, int val1, int val2){
     if(compareVal >= val1 && compareVal <= val2){
