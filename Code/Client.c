@@ -130,21 +130,33 @@ int main(void)
     return 0;
 }
 
+/**
+* Function used to send a message
+*/
 void *talking_function(void *arg)
 {
+  //Always listen for input
     while(1)
     {
-        printf("\n Enter message : \n");
-        gets(message);
-        printf("\nBefore Encryption: %s \n", message);
-        memset(encryptedMessage, '\0', BUFLEN);
-        encrypt(encryptedMessage, message);//encrypt message
-        printf("Encrypted Message: %s \n", encryptedMessage);
-        //send the message
+        printf("\n Enter message : \n");                      // Prompt the user for input
+        gets(message);                                        // Get the message from the stream
+        printf("\nBefore Encryption: %s \n", message);        // Show original message
+        memset(encryptedMessage, '\0', BUFLEN);               // Set the bytes for the message
+        encrypt(encryptedMessage, message);                   // Encrypt the message
+        printf("Encrypted Message: %s \n", encryptedMessage); // Print the encrypted message
+
+        /**
+        * This 'if' statement is used to send the message
+        *     • @param s                  The current Socket
+        *     • @param encruptedMessage   The encryptedMessage to send
+        *     • @param strlen             The size of the message
+        *     • @param 0                  Any flags for the message
+        *     • @param &si_other          Socket address
+        *     • @param slen               The length of the sent message
+        * Returns -1 if fails.
+        */
         if (sendto(s, encryptedMessage, strlen(encryptedMessage) , 0 , (struct sockaddr *) &si_other, slen)==-1)
-        {
             die("sendto()");
-        }
 
         //receive a reply and print it
         //clear the buffer by filling null, it might have previously received data
@@ -261,7 +273,7 @@ void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
   * @param compareVal The variable that we are comparing
   * @param val1       The upper bound (max)
   * @param val2       The lower bound (min)
-  * @return           If the change was made
+  * @return           If the change was made or not
   */
   int verifyVal(char compareVal, int val1, int val2){
     if(compareVal >= val1 && compareVal <= val2){
