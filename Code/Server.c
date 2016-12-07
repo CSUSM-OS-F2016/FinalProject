@@ -26,21 +26,33 @@ char encryptedMessage[BUFLEN];
 char decryptedMessage[BUFLEN];
 pthread_t	tid[2]; // init thread(s)
 
+int minValue;//base
+int maxValue;//cap
 
 void *hearing_function(void *arg); // function for listening thread
 void *talking_function(void *arg); // function for listening thread
 
 
-/*HOW TO CALL: provide an plain message variable you would like to encrypt and a *variable to hold the encrypted message
-*PURPOSE: Encrypts a plain text message using a caesar cipher algorithm
+/*
+* HOW TO CALL: provide an plain message variable you would like to encrypt and a *variable to hold the encrypted message
+* PURPOSE: Encrypts a plain text message using a caesar cipher algorithm
 */
 void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]);
 
-/*HOW TO CALL: provide your encrypted message variable, and your variable to hold the  *decrypted message
-*PURPOSE: decrypts a plain text message using a caesar cipher algorithm reversed
+/*
+* HOW TO CALL: provide your encrypted message variable, and your variable to hold the  *decrypted message
+* PURPOSE: decrypts a plain text message using a caesar cipher algorithm reversed
 */
 void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]);
 
+//To make checks simpler
+int verifyVal(char compareVal, int val1, int val2);
+
+//To change the min and max values
+void setVals(int min, int max);
+
+//For encryption and decryption checking
+void checkBounds(char value);
 
 void die(char *s)
 {
@@ -50,7 +62,6 @@ void die(char *s)
 
 int main(void)
 {
-
     int status;
     //create a UDP socket
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
@@ -105,7 +116,6 @@ void *hearing_function(void *arg)
 {
     while(1)
     {
-
         fflush(stdout);
 
         //try to receive some data, this is a blocking call
@@ -121,19 +131,16 @@ void *hearing_function(void *arg)
         decrypt(decryptedMessage, buf);//decrypt the message
 
         printf("decrypted Data: %s\n" , decryptedMessage);
-
-
-
     }
 
 
     pthread_exit(NULL);
 }
+
 void *talking_function(void *arg)
 {
     while(1)
     {
-
         printf("\n Enter message : \n");
         gets(message);
         printf("\n");
@@ -156,48 +163,23 @@ void *talking_function(void *arg)
 }
 
 /*
-*PURPOSE: Encrypts a plain text message using a caesar cipher algorithm
+* PURPOSE: Encrypts a plain text message using a caesar cipher algorithm
 *		  by shifting right through the asci table 4 indexs.
 *		  The Series of if statements set the bounds depending on what your ascii value is
-*@param encryptedMessage variable and message variable
+* @param encryptedMessage variable and message variable
 */
 void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
-	int minValue;//base
-	int maxValue;//cap
+	minValue = 0;//base
+	maxValue = 0;//cap
 	int key = 0;
 	int i = 0;
 	int asciIndex = 0;
-	while (message[i] != '\0') {
+	while (message[i] != '\0')
+  {
 		char asciVal = message[i];
 		//if statements set boundaries for different cases, whether its a number, or letter etc
-		if (asciVal >= 65 && asciVal <= 90) {//uppercase
-			minValue = 65;
-			maxValue = 90;
-		}
-		if (asciVal >= 97 && asciVal <= 122) {//lowercase
-			minValue = 97;
-			maxValue = 122;
-		}
-		if (asciVal >= 48 && asciVal <= 57) {//numbers
-			minValue = 48;
-			maxValue = 57;
-		}
-		if (asciVal >= 33 && asciVal <= 47) {//specialChars1
-			minValue = 33;
-			maxValue = 47;
-		}
-		if (asciVal >= 58 && asciVal <= 64) {//specialChars2
-			minValue = 58;
-			maxValue = 64;
-		}
-		if (asciVal >= 91 && asciVal <= 96) {//specialChars3
-			minValue = 91;
-			maxValue = 96;
-		}
-		if (asciVal >= 123 && asciVal <= 126) {//specialChars4
-			minValue = 123;
-			maxValue = 126;
-		}
+	  checkBounds(asciVal);
+
 		if (asciVal == ' ') {// if asci value is a space, assign it space and skip to next iteration
 			encryptedMessage[i] = ' ';
 			i++;
@@ -214,57 +196,30 @@ void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
 		i++;
 	}
 }
-  /*
-*PURPOSE: decrypts a plain text message using a caesar cipher algorithm reversed
+/*
+* PURPOSE: decrypts a plain text message using a caesar cipher algorithm reversed
 *		  by shifting left through the asci table 4 indexs.
 *		  The Series of if statements set the bounds depending on what your ascii value is
-*@param encryptedMessage variable and message variable to hold decrypted message variable
+* @param encryptedMessage variable and message variable to hold decrypted message variable
 */
 void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
 		//if statements set boundaries for different cases, whether its a number, or letter etc
-		int minValue;//base
-		int maxValue;//cap
+		minValue = 0;//base
+		maxValue = 0;//cap
 		int key = 0;
 		int i = 0;
 		int asciIndex = 0;
-		while (encryptedMessage[i] != '\0') {
+		while (encryptedMessage[i] != '\0')
+    {
 			char asciVal = encryptedMessage[i];
+			checkBounds(asciVal);
 
-			if (asciVal >= 65 && asciVal <= 90) {//uppercase
-				minValue = 65;
-				maxValue = 90;
-			}
-			if (asciVal >= 97 && asciVal <= 122) {//lowercase
-				minValue = 97;
-				maxValue = 122;
-			}
-			if (asciVal >= 48 && asciVal <= 57) {//numbers
-				minValue = 48;
-				maxValue = 57;
-			}
-			if (asciVal >= 33 && asciVal <= 47) {//specialChars1
-				minValue = 33;
-				maxValue = 47;
-			}
-			if (asciVal >= 58 && asciVal <= 64) {//specialChars2
-				minValue = 58;
-				maxValue = 64;
-			}
-			if (asciVal >= 91 && asciVal <= 96) {//specialChars3
-				minValue = 91;
-				maxValue = 96;
-			}
-			if (asciVal >= 123 && asciVal <= 126) {//specialChars4
-				minValue = 123;
-				maxValue = 126;
-			}
-
-			if (asciVal == ' ') {// if asci value is a space assign a space and skip
+			if (asciVal == ' ') {  // if asci value is a space assign a space and skip
 				message[i] = ' ';
 				i++;
 				continue;
 			}
-			asciIndex = asciVal;//get ascii index for ascii value
+			asciIndex = asciVal;   //get ascii index for ascii value
 			asciIndex = (asciIndex - 4);// asci index shifs left 4 times
 
 			if (asciIndex < minValue) {//if your index goes below min
@@ -275,4 +230,45 @@ void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
 			message[i] = asciVal;
 			i++;
     }
-		}
+	}
+
+
+  /**
+  * Complete a standard comparison between two values
+  * @param compareVal The variable that we are comparing
+  * @param val1       The upper bound (max)
+  * @param val2       The lower bound (min)
+  */
+  int verifyVal(char compareVal, int val1, int val2){
+    if(compareVal >= val1 && compareVal <= val2){
+      //Set the min to val1 and the max to val2
+      setVals(val1, val2);
+      return 0;
+    }
+    return -1;
+  }
+
+  /**
+  * Sets the min and max values for encryption
+  * @param min        The min value to set minValue to
+  * @param max        The max value to set maxValue to
+  */
+  void setVals(int min, int max){
+    minValue = min;
+    maxValue = max;
+  }
+
+  /**
+  * Wrapper function for verifyVals
+  * @param value      The variable to use as a comparison in verifyVal
+  */
+  void checkBounds(char value){
+  //if statements set boundaries for different cases, whether its a number, or letter etc
+    verifyVal(value, 65, 90);      //uppercase
+    verifyVal(value, 97, 122);     //lowercase
+    verifyVal(value, 48, 57);      //numbers
+    verifyVal(value, 33, 47);      //specialChars1
+    verifyVal(value, 58, 64);      //specialChars2
+    verifyVal(value, 91, 96);      //specialChars3
+    verifyVal(value, 123, 126);    //specialChars4
+  }
