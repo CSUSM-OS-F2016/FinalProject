@@ -139,7 +139,7 @@ void *hearing_function(void *arg)
         memset(decryptedMessage, '\0', MSGLEN);                 // Allocate and set memory for the decrupted message
         decrypt(decryptedMessage, recievedMessage);                         // decrypt the message
 
-        printf("Client: %s\n" , decryptedMessage);              // Print the data
+        printf("\033[0;34m Client: %s \033[0m \n" , decryptedMessage);              // Print the data
     }
 
 
@@ -153,7 +153,7 @@ void *talking_function(void *arg)
 {
     while(1)
     {
-        printf("\n Enter message : \n");
+        printf("\n \033[0;33m  Enter message : \033[0m \n");
         gets(message);
         printf("\n");
 
