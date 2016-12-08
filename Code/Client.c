@@ -169,28 +169,39 @@ void *talking_function(void *arg)
     pthread_exit(NULL);
 }
 
-
+/**
+* Function to always listen for text from the server
+*/
 void *listen_function(void *arg)
 {
+    // Always listen
     while(1)
     {
         /** try to receive some data, this is a blocking call */
+        /**
+        * This 'if' statement recieves the message from the predescribed socket so it can be decrypted
+        *     • @param s          Current socket
+        *     • @param bufLis     Restricted buffer
+        *     • @param BUFLEN     The size of the buffer length
+        *     • @param 0          Any flags required
+        *     • @param &si_other  The socket address of the server
+        *     • @param &slen      The length of the address
+        *  @return The number of bytes recieved. -1 if an error occured
+        */
         if (recvfrom(s, bufLis, BUFLEN, 0, (struct sockaddr *) &si_other, (unsigned int *)&slen) == -1)
-        {
             die("recvfrom()");
-        }
 
         //print details of the client/peer and the data received
-        printf("Received packet from %s:%d\n ", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
-        printf("Encrypted Message: %s\n" , bufLis);
-        memset(decryptedMessage, '\0', BUFLEN);
-        decrypt(decryptedMessage, bufLis);//decrypt the message
-        printf("Decrypted Message: %s\n" , decryptedMessage);
-        //printf("Data: %s  \n" , bufLis);
-        memset(bufLis,'0',BUFLEN);
+        //printf("Received packet from %s:%d\n ", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
+        //printf("Encrypted Message: %s\n" , bufLis);
+        memset(decryptedMessage, '\0', BUFLEN);                 // Allocate and set memory for the decrupted message
+        decrypt(decryptedMessage, bufLis);                      // decrypt the message
+
+        printf("Decrypted Message: %s\n" , decryptedMessage);   // Display the decrypted Message
+        memset(bufLis,'0',BUFLEN);                              // Set memory for the registered buffer
     }
 
-    pthread_exit(NULL);
+    pthread_exit(NULL);                                         //Exit the thread
 }
 
 /*
@@ -217,15 +228,15 @@ void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
 			i++;
 			continue;
 		}
-		asciIndex = value;// convert value to the asciii Index
-		asciIndex = (asciIndex + 4);// Shifts ascii index 4 times value
+		asciIndex = value;                      // convert value to the asciii Index
+		asciIndex = (asciIndex + 4);            // Shifts ascii index 4 times value
 		if (asciIndex > maxValue)
     {
       //if your index exceeds max value, round robin around the ascii table
-			asciIndex = asciIndex % (maxValue);      // round-robin
-			asciIndex = asciIndex+(minValue-1);      // add to your base
+			asciIndex = asciIndex % (maxValue);   // round-robin
+			asciIndex = asciIndex+(minValue-1);   // add to your base
 		}
-		value = asciIndex;                       //makesure its not below the min value
+		value = asciIndex;                      //makesure its not below the min value
 		encryptedMessage[i] = value;
 		i++;
 	}
@@ -239,8 +250,8 @@ void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
 */
 void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
 		//if statements set boundaries for different cases, whether its a number, or letter etc
-    minValue = 0;//base
-    maxValue = 0;//cap
+    minValue = 0;                             //base
+    maxValue = 0;                            //cap
 		int key = 0;
 		int i = 0;
 		int asciIndex = 0;
@@ -249,19 +260,19 @@ void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
 
 			checkBounds(value);
 
-			if (value == ' ') {// if asci value is a space assign a space and skip
+			if (value == ' ') {                    // if asci value is a space assign a space and skip
 				message[i] = ' ';
 				i++;
 				continue;
 			}
-			asciIndex = value;//get ascii index for ascii value
-			asciIndex = (asciIndex - 4);// asci index shifs left 4 times
+			asciIndex = value;                     // get ascii index for ascii value
+			asciIndex = (asciIndex - 4);           // asci index shifs left 4 times
 
-			if (asciIndex < minValue) {//if your index goes below min
-				asciIndex = (minValue - asciIndex); //Find out how far below min it is
-				asciIndex= (maxValue+1) - asciIndex;// subtract that from max +1
+			if (asciIndex < minValue) {            // if your index goes below min
+				asciIndex = (minValue - asciIndex);  // Find out how far below min it is
+				asciIndex= (maxValue+1) - asciIndex; // subtract that from max +1
 			}
-			value = asciIndex;//get the ascii value for your index
+			value = asciIndex;                     //get the ascii value for your index
 			message[i] = value;
 			i++;
     }
