@@ -1,7 +1,11 @@
-//The server file
-/*
- Simple udp server
- */
+// ===============================================================
+//HW#: Final Project - IM_upd_encryption
+//Names: Damien Brantley, Jaymes Byrne, Justin Goulet ,Shane Sharareh
+//Complier:  gcc
+//File type: server .c
+//Date:      12/08/16.
+//================================================================
+//**************HEADERS***********************************
 #include<stdio.h> //printf
 #include<string.h> //memset
 #include<stdlib.h> //exit(0);
@@ -12,10 +16,13 @@
 #include <semaphore.h>
 #include <pthread.h>
 #include <semaphore.h>
+//********************************************************
 
 #define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 
+
+//*****************GLOBAL*******************************
 struct sockaddr_in si_me, si_other;
 
 int s, i, slen = sizeof(si_other) , recv_len;
@@ -29,7 +36,19 @@ pthread_t	tid[2]; // init thread(s)
 int minValue;//base
 int maxValue;//cap
 
+//******************************************************
+
+
+//****************PROTOYPE******************************
+/*
+ *
+ * PURPOSE: thread that will listen for client
+ */
 void *hearing_function(void *arg); // function for listening thread
+/*
+ *
+ * PURPOSE: thread that will talk with server
+ */
 void *talking_function(void *arg); // function for listening thread
 
 
@@ -53,6 +72,9 @@ void setVals(int min, int max);
 
 //For encryption and decryption checking
 void checkBounds(char value);
+
+//******************************************************
+
 
 void die(char *s)
 {
