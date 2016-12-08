@@ -205,13 +205,13 @@ void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
 			i++;
 			continue;
 		}
-		asciIndex = asciVal;// convert asciVal to the asciii Index
-		asciIndex = (asciIndex + 4);// Shifts ascii index 4 times value
-		if (asciIndex > maxValue) {//if your index exceeds max value, round robin around the ascii table
-			asciIndex = asciIndex % (maxValue);//round-robin
-			asciIndex = asciIndex+(minValue-1);// add to your base
+		asciIndex = asciVal;                    // convert asciVal to the asciii Index
+		asciIndex = (asciIndex + 4);            // Shifts ascii index 4 times value
+		if (asciIndex > maxValue) {             // if your index exceeds max value, round robin around the ascii table
+			asciIndex = asciIndex % (maxValue);   // round-robin
+			asciIndex = asciIndex+(minValue-1);   // add to your base
 		}
-		asciVal = asciIndex;//makesure its not below the min value
+		asciVal = asciIndex;                    //makesure its not below the min value
 		encryptedMessage[i] = asciVal;
 		i++;
 	}
@@ -239,14 +239,14 @@ void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
 				i++;
 				continue;
 			}
-			asciIndex = asciVal;   //get ascii index for ascii value
-			asciIndex = (asciIndex - 4);// asci index shifs left 4 times
+			asciIndex = asciVal;                     // get ascii index for ascii value
+			asciIndex = (asciIndex - 4);             // asci index shifs left 4 times
 
-			if (asciIndex < minValue) {//if your index goes below min
-				asciIndex = (minValue - asciIndex); //Find out how far below min it is
-				asciIndex= (maxValue+1) - asciIndex;// subtract that from max +1
+			if (asciIndex < minValue) {              // if your index goes below min
+				asciIndex = (minValue - asciIndex);    // Find out how far below min it is
+				asciIndex= (maxValue+1) - asciIndex;   // subtract that from max +1
 			}
-			asciVal = asciIndex;//get the ascii value for your index
+			asciVal = asciIndex;                     // get the ascii value for your index
 			message[i] = asciVal;
 			i++;
     }
