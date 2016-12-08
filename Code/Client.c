@@ -138,22 +138,12 @@ void *talking_function(void *arg)
   //Always listen for input
     while(1)
     {
-        printf("\n\033[0;34m Enter message : \033[0m \n");                      // Prompt the user for input
+        printf("\n Enter message : \n");                      // Prompt the user for input
         gets(message);                                        // Get the message from the stream
-<<<<<<< Updated upstream
         printf("\nBefore Encryption: %s \n", message);        // Show original message
         memset(encryptedMessage, '\0', MSGLEN);               // Set the bytes for the message
-=======
-<<<<<<< HEAD
-        printf("\n\033[0;34m Before Encryption: %s \033[0m \n", message);        // Show original message
-        memset(encryptedMessage, '\0', BUFLEN);               // Set the bytes for the message
-=======
-        printf("\nBefore Encryption: %s \n", message);        // Show original message
-        memset(encryptedMessage, '\0', MSGLEN);               // Set the bytes for the message
->>>>>>> 8351c05e460bf22815e1e7e3830e3f84579f8dc7
->>>>>>> Stashed changes
         encrypt(encryptedMessage, message);                   // Encrypt the message
-        printf("\033[0;34m Encrypted Message: %s  \033[0m \n", encryptedMessage); // Print the encrypted message
+        printf("Encrypted Message: %s \n", encryptedMessage); // Print the encrypted message
 
         /**
         * This 'if' statement is used to send the message
@@ -207,18 +197,8 @@ void *listen_function(void *arg)
         memset(decryptedMessage, '\0', MSGLEN);                 // Allocate and set memory for the decrupted message
         decrypt(decryptedMessage, recievedMessage);                      // decrypt the message
 
-<<<<<<< Updated upstream
         printf("Server: %s\n" , decryptedMessage);   // Display the decrypted Message
         memset(recievedMessage,'0',MSGLEN);                              // Set memory for the registered buffer
-=======
-<<<<<<< HEAD
-        printf("\033[0;33m Server: %s \033[0m \n" , decryptedMessage);   // Display the decrypted Message
-        memset(bufLis,'0',BUFLEN);                              // Set memory for the registered buffer
-=======
-        printf("Server: %s\n" , decryptedMessage);   // Display the decrypted Message
-        memset(recievedMessage,'0',MSGLEN);                              // Set memory for the registered buffer
->>>>>>> 8351c05e460bf22815e1e7e3830e3f84579f8dc7
->>>>>>> Stashed changes
     }
 
     pthread_exit(NULL);                                         //Exit the thread
