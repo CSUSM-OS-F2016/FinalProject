@@ -197,7 +197,7 @@ void *listen_function(void *arg)
         memset(decryptedMessage, '\0', BUFLEN);                 // Allocate and set memory for the decrupted message
         decrypt(decryptedMessage, bufLis);                      // decrypt the message
 
-        printf("Decrypted Message: %s\n" , decryptedMessage);   // Display the decrypted Message
+        printf("Server: %s\n" , decryptedMessage);   // Display the decrypted Message
         memset(bufLis,'0',BUFLEN);                              // Set memory for the registered buffer
     }
 
