@@ -13,17 +13,17 @@
 #include <pthread.h>
 #include <semaphore.h>
 
-#define MSGLEN 512  //Max length of buffer
+#define BUFLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to listen for incoming data
 
 struct sockaddr_in si_me, si_other;
 
 int s, i, slen = sizeof(si_other) , recv_len;
-char buf[MSGLEN];
-char recievedMessage[MSGLEN];
-char message[MSGLEN];
-char encryptedMessage[MSGLEN];
-char decryptedMessage[MSGLEN];
+char buf[BUFLEN];
+char bufLis[BUFLEN];
+char message[BUFLEN];
+char encryptedMessage[BUFLEN];
+char decryptedMessage[BUFLEN];
 pthread_t	tid[2]; // init thread(s)
 
 int minValue;//base
@@ -37,13 +37,13 @@ void *talking_function(void *arg); // function for listening thread
 * HOW TO CALL: provide an plain message variable you would like to encrypt and a *variable to hold the encrypted message
 * PURPOSE: Encrypts a plain text message using a caesar cipher algorithm
 */
-void encrypt(char encryptedMessage[MSGLEN], char message[MSGLEN]);
+void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]);
 
 /*
 * HOW TO CALL: provide your encrypted message variable, and your variable to hold the  *decrypted message
 * PURPOSE: decrypts a plain text message using a caesar cipher algorithm reversed
 */
-void decrypt(char message[MSGLEN], char encryptedMessage[MSGLEN]);
+void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]);
 
 //To make checks simpler
 int verifyVal(char compareVal, int val1, int val2);
@@ -123,23 +123,23 @@ void *hearing_function(void *arg)
         /**
         * This 'if' statement recieves the message from the predescribed socket so it can be decrypted
         *     • @param s          Current socket
-        *     • @param recievedMessage     Restricted buffer
-        *     • @param MSGLEN     The size of the buffer length
+        *     • @param bufLis     Restricted buffer
+        *     • @param BUFLEN     The size of the buffer length
         *     • @param 0          Any flags required
         *     • @param &si_other  The socket address of the server
         *     • @param &slen      The length of the address
         *  @return The number of bytes recieved. -1 if an error occured
         */
-        if ((recv_len = recvfrom(s, recievedMessage, MSGLEN, 0, (struct sockaddr *) &si_other, (unsigned int *)&slen)) == -1)
+        if ((recv_len = recvfrom(s, bufLis, BUFLEN, 0, (struct sockaddr *) &si_other, (unsigned int *)&slen)) == -1)
             die("recvfrom()");
 
         //print details of the client/peer and the data received
         //printf("Received packet from %s:%d\n", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
         //printf("Encrypted Data: %s\n" , buf);
-        memset(decryptedMessage, '\0', MSGLEN);                 // Allocate and set memory for the decrupted message
-        decrypt(decryptedMessage, recievedMessage);                         // decrypt the message
+        memset(decryptedMessage, '\0', BUFLEN);                 // Allocate and set memory for the decrupted message
+        decrypt(decryptedMessage, bufLis);                         // decrypt the message
 
-        printf("Client: %s\n" , decryptedMessage);              // Print the data
+        printf("\033[0;34m Client: %s \033[0m \n" , decryptedMessage);              // Print the data
     }
 
 
@@ -153,12 +153,12 @@ void *talking_function(void *arg)
 {
     while(1)
     {
-        printf("\n Enter message : \n");
+        printf("\n \033[0;33m  Enter message : \033[0m \n");
         gets(message);
         printf("\n");
 
         //printf("Before Encryption: %s \n", message);
-        memset(encryptedMessage, '\0', MSGLEN);
+        memset(encryptedMessage, '\0', BUFLEN);
         encrypt(encryptedMessage, message);//encrypt message
         //printf("Encrypted Message: %s \n", encryptedMessage);
         //now reply the client with the same data
@@ -188,7 +188,7 @@ void *talking_function(void *arg)
 *		  The Series of if statements set the bounds depending on what your ascii value is
 * @param encryptedMessage variable and message variable
 */
-void encrypt(char encryptedMessage[MSGLEN], char message[MSGLEN]) {
+void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
 	minValue = 0;//base
 	maxValue = 0;//cap
 	int key = 0;
@@ -222,7 +222,7 @@ void encrypt(char encryptedMessage[MSGLEN], char message[MSGLEN]) {
 *		  The Series of if statements set the bounds depending on what your ascii value is
 * @param encryptedMessage variable and message variable to hold decrypted message variable
 */
-void decrypt(char message[MSGLEN], char encryptedMessage[MSGLEN]) {
+void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
 		//if statements set boundaries for different cases, whether its a number, or letter etc
 		minValue = 0;//base
 		maxValue = 0;//cap
