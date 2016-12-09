@@ -162,7 +162,7 @@ void *talking_function(void *arg)
   //Always listen for input
     while(1)
     {
-        printf("\n\033[0;34m Enter message : \033[0m \n");                      // Prompt the user for input
+        printf("\n\033[0;34m Enter message : \033[0m ");                      // Prompt the user for input
         gets(message);                                        // Get the message from the stream
         printf("\n\033[0;34m Before Encryption: %s \033[0m \n", message);        // Show original message
         memset(encryptedMessage, '\0', BUFLEN);               // Set the bytes for the message

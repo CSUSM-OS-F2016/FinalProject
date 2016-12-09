@@ -175,7 +175,7 @@ void *talking_function(void *arg)
 {
     while(1)
     {
-        printf("\n \033[0;33m  Enter message : \033[0m \n");
+        printf("\n \033[0;33m  Enter message : \033[0m ");
         gets(message);
         printf("\n");
 
