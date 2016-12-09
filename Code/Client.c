@@ -13,16 +13,16 @@
 #include <pthread.h>
 
 #define SERVER "127.0.0.1"
-#define BUFLEN 512  //Max length of buffer
+#define MSGLEN 512  //Max length of buffer
 #define PORT 8888   //The port on which to send data
 
 struct sockaddr_in si_other;
 int s, i, slen=sizeof(si_other);
-char buf[BUFLEN];
-char bufLis[BUFLEN];
-char message[BUFLEN];
-char encryptedMessage[BUFLEN];
-char decryptedMessage[BUFLEN];
+char buf[MSGLEN];
+char recievedMessage[MSGLEN];
+char message[MSGLEN];
+char encryptedMessage[MSGLEN];
+char decryptedMessage[MSGLEN];
 pthread_mutex_t lock;
 
 
@@ -40,14 +40,14 @@ void *listen_function(void *arg); //  function for talking thread
 *   variable to hold the encrypted message
 * PURPOSE: Encrypts a plain text message using a caesar cipher algorithm
 */
-void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]);
+void encrypt(char encryptedMessage[MSGLEN], char message[MSGLEN]);
 
 /*
 * HOW TO CALL: provide your encrypted message variable, and your variable to
 *    hold the  *decrypted message
 * PURPOSE: decrypts a plain text message using a caesar cipher algorithm reversed
 */
-void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]);
+void decrypt(char message[MSGLEN], char encryptedMessage[MSGLEN]);
 
 //To make checks simpler
 int verifyVal(char compareVal, int val1, int val2);
@@ -141,7 +141,7 @@ void *talking_function(void *arg)
         printf("\n\033[0;34m Enter message : \033[0m \n");                      // Prompt the user for input
         gets(message);                                        // Get the message from the stream
         printf("\n\033[0;34m Before Encryption: %s \033[0m \n", message);        // Show original message
-        memset(encryptedMessage, '\0', BUFLEN);               // Set the bytes for the message
+        memset(encryptedMessage, '\0', MSGLEN);               // Set the bytes for the message
         encrypt(encryptedMessage, message);                   // Encrypt the message
         printf("\033[0;34m Encrypted Message: %s  \033[0m \n", encryptedMessage); // Print the encrypted message
 
@@ -181,24 +181,24 @@ void *listen_function(void *arg)
         /**
         * This 'if' statement recieves the message from the predescribed socket so it can be decrypted
         *     • @param s          Current socket
-        *     • @param bufLis     Restricted buffer
-        *     • @param BUFLEN     The size of the buffer length
+        *     • @param recievedMessage     Restricted buffer
+        *     • @param MSGLEN     The size of the buffer length
         *     • @param 0          Any flags required
         *     • @param &si_other  The socket address of the server
         *     • @param &slen      The length of the address
         *  @return The number of bytes recieved. -1 if an error occured
         */
-        if (recvfrom(s, bufLis, BUFLEN, 0, (struct sockaddr *) &si_other, (unsigned int *)&slen) == -1)
+        if (recvfrom(s, recievedMessage, MSGLEN, 0, (struct sockaddr *) &si_other, (unsigned int *)&slen) == -1)
             die("recvfrom()");
 
         //print details of the client/peer and the data received
         //printf("Received packet from %s:%d\n ", inet_ntoa(si_other.sin_addr), ntohs(si_other.sin_port));
-        //printf("Encrypted Message: %s\n" , bufLis);
-        memset(decryptedMessage, '\0', BUFLEN);                 // Allocate and set memory for the decrupted message
-        decrypt(decryptedMessage, bufLis);                      // decrypt the message
+        //printf("Encrypted Message: %s\n" , recievedMessage);
+        memset(decryptedMessage, '\0', MSGLEN);                 // Allocate and set memory for the decrupted message
+        decrypt(decryptedMessage, recievedMessage);                      // decrypt the message
 
         printf("\033[0;33m Server: %s \033[0m \n" , decryptedMessage);   // Display the decrypted Message
-        memset(bufLis,'0',BUFLEN);                              // Set memory for the registered buffer
+        memset(recievedMessage,'0',MSGLEN);                              // Set memory for the registered buffer
     }
 
     pthread_exit(NULL);                                         //Exit the thread
@@ -210,7 +210,7 @@ void *listen_function(void *arg)
 *		  The Series of if statements set the bounds depending on what your ascii value is
 * @param encryptedMessage variable and message variable
 */
-void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
+void encrypt(char encryptedMessage[MSGLEN], char message[MSGLEN]) {
 
   minValue = 0;//base
   maxValue = 0;//cap
@@ -248,7 +248,7 @@ void encrypt(char encryptedMessage[BUFLEN], char message[BUFLEN]) {
 *		  The Series of if statements set the bounds depending on what your ascii value is
 * @param encryptedMessage variable and message variable to hold decrypted message variable
 */
-void decrypt(char message[BUFLEN], char encryptedMessage[BUFLEN]) {
+void decrypt(char message[MSGLEN], char encryptedMessage[MSGLEN]) {
 		//if statements set boundaries for different cases, whether its a number, or letter etc
     minValue = 0;                             //base
     maxValue = 0;                            //cap
